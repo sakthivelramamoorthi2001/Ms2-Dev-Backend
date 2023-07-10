@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String
+  password String
+
+  role       Role      @relation(references: [id], fields: [role_id])
+  role_id    Int
+  created_at DateTime  @default(now()) @db.Timestamptz(3)
+  updated_at DateTime  @updatedAt @db.Timestamptz(3)
+  Template   Template? @relation(fields: [templateId], references: [id])
+  templateId Int?
+}
+
+model Token {
+  id         Int      @id @default(autoincrement())
+  token      String
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+}
+
+model Role {
+  id   Int    @id @default(autoincrement())
+  role String
+  User User[]
+}
+
+model TypeOfContent {
+  id         Int        @id @default(autoincrement())
+  name       String
+  Contents   Contents[]
+  created_at DateTime   @default(now()) @db.Timestamptz(3)
+  updated_at DateTime   @updatedAt @db.Timestamptz(3)
+}
+
+model Contents {
+  id              Int             @id @default(autoincrement())
+  contents        String
+  typeOfContnet   TypeOfContent   @relation(fields: [typeOfContentId], references: [id])
+  typeOfContentId Int
+  price           Int             @default(0)
+  created_at      DateTime        @default(now()) @db.Timestamptz(3)
+  updated_at      DateTime        @updatedAt @db.Timestamptz(3)
+  ContentImages   ContentImages[]
+  template        Template        @relation(fields: [templateId], references: [id])
+  templateId      Int
+}
+
+model Template {
+  id         Int      @id @default(autoincrement())
+  contentsId Int[]
+  price      Int      @default(0)
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+  User       User[]
+
+  TemplateImages TemplateImages[]
+  Contents       Contents[]
+}
+
+model TemplateImages {
+  id         Int      @id @default(autoincrement())
+  img_url    String
+  template   Template @relation(fields: [templateId], references: [id])
+  templateId Int
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+}
+
+model ContentImages {
+  id         Int      @id @default(autoincrement())
+  img_url    String
+  content    Contents @relation(fields: [contentsId], references: [id])
+  contentsId Int
+  created_at DateTime @default(now()) @db.Timestamptz(3)
+  updated_at DateTime @updatedAt @db.Timestamptz(3)
+}
