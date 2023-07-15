@@ -1,7 +1,7 @@
 const Joi = require("joi");
 
 const login = {
-    bodyy : Joi.object().keys({
+    body : Joi.object().keys({
             email : Joi.string().required(),
             password : Joi.string().required()  
     })
