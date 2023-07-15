@@ -5,7 +5,9 @@ const {loginController} = require('../controller/index')
 const router  = express.Router()
 
 router.route('/')
-    .get(loginController.login)
+    .get(validate(loginValidation.login), loginController.login)
+
+
 
 module.exports = router
 

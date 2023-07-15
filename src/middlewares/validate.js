@@ -1,30 +1,24 @@
-const Joi = require('joi')
-const httpStatus =  require('http-status')
+const Joi = require("joi");
+const httpStatus = require("http-status");
+const { pickWhichCorrect } = require("../utils/pick");
 
 const validate = (schema) => (req, res, next) => {
-    console.log(Object.keys(schema));
-    const key = ['params', 'query', 'body']
+  const validSchema = ["params", "query", "body"];
+  const object = pickWhichCorrect(req, Object.keys(validSchema));
 
-    const checkSchema = key.find((e)=>{
-        return  Object.keys(schema).find((v) =>{
-            return v=== e
-        })
-    })
+  const { value, error } = Joi.compile(validSchema).validate(object);
 
-    if (checkSchema) {
-        return next()
-    } 
-    
-    
-    // if (key.find(Object.keys(schema)) && Object.keys(schema) === req.method) {
-    //     next()
-    // } else {
-    //     throw new Error()
-    // }
-    
+  if (error) {
+    const errorMessage = error.details
+      .map((details) => details.message)
+      .join(", ");
+    return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
+  }
 
-}
+  Object.assign(req, value);
+  return next();
+};
 
 module.exports = {
-    validate
-}
+  validate,
+};
