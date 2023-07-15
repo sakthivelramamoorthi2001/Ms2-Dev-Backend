@@ -6,7 +6,7 @@ const assert = require('assert')
 
 
 const login = cathcAsync((req, res) => {
-    console.log(req,'asdf');    
+    res.send({name:'sdv', data:'sdfg'})
 })
 
 module.exports = {
